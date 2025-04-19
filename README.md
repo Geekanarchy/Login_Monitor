@@ -186,25 +186,62 @@ Never commit `.env` or credentials to version control. Use `.gitignore` to prote
 
 #### Common Issues
 
-1. **Missing Environment Variables**
-   - Ensure all required variables are set in the `.env` file.
-   - Use the `env.example` file as a reference.
+1. **Network Errors**
+   - **Problem**: The script fails to connect to the login URL or Webex webhook.
+   - **Solution**:
+     - Verify that the URLs in the `LOGIN_URLS` and `WEBEX_WEBHOOK` environment variables are correct.
+     - Check your internet connection and ensure the target server is reachable.
+     - Use tools like `ping` or `curl` to test connectivity to the URLs.
 
-2. **SMTP Errors**
-   - Verify SMTP credentials and server details in the `.env` file.
-   - Check if the SMTP server allows connections from your IP.
+2. **SMTP Configuration Problems**
+   - **Problem**: Email alerts are not being sent.
+   - **Solution**:
+     - Verify the SMTP server, port, username, and password in the `.env` file.
+     - Ensure the `EMAIL_FROM` and `EMAIL_TO` addresses are valid.
+     - Check if the SMTP server requires additional configuration, such as enabling "less secure apps" or generating an app-specific password.
+     - Test the SMTP connection using a tool like `telnet` or an email client.
 
-3. **Webex Alert Issues**
-   - Ensure the `WEBEX_WEBHOOK` URL is correct and active.
-   - Check Webex API permissions.
+3. **Environment Variable Issues**
+   - **Problem**: Missing or incorrect environment variables cause the script to fail.
+   - **Solution**:
+     - Ensure all required variables are set in the `.env` file.
+     - Use the `env.example` file as a reference.
+     - Double-check for typos or missing values.
 
 4. **Docker Build Failures**
-   - Ensure Docker is installed and running.
-   - Run `docker-compose up --build` to rebuild the container.
+   - **Problem**: The Docker container fails to build or run.
+   - **Solution**:
+     - Ensure Docker is installed and running on your system.
+     - Run `docker-compose up --build` to rebuild the container.
+     - Check the Dockerfile and `docker-compose.yml` for syntax errors or misconfigurations.
 
 5. **Log File Issues**
-   - Ensure the `login_monitor.log` file is writable.
-   - Check volume mappings in `docker-compose.yml`.
+   - **Problem**: The `login_monitor.log` file is not being updated or is missing.
+   - **Solution**:
+     - Ensure the script has write permissions for the log file.
+     - Check the `LOG_FILE` path in the script and ensure it points to a valid location.
+     - If running in Docker, ensure the volume mapping for logs is correctly configured in `docker-compose.yml`.
+
+6. **Webex Alert Issues**
+   - **Problem**: Webex alerts are not being sent.
+   - **Solution**:
+     - Verify the `WEBEX_WEBHOOK` URL is correct and active.
+     - Check Webex API permissions and ensure the webhook is configured to accept incoming messages.
+     - Look for error messages in the logs to identify the issue.
+
+7. **Permission Errors**
+   - **Problem**: The script fails due to permission issues.
+   - **Solution**:
+     - Ensure the script and its dependencies have the necessary permissions to execute.
+     - If running in Docker, ensure the container has access to required files and directories.
+
+8. **Throttled Alerts**
+   - **Problem**: Alerts are not being sent even though the status has changed.
+   - **Solution**:
+     - Check the `ALERT_THROTTLE_PERIOD` value in the `.env` file.
+     - Ensure sufficient time has passed since the last alert.
+
+If you encounter an issue not listed here, check the logs in `login_monitor.log` for more details or raise an issue in the repository.
 
 ---
 
