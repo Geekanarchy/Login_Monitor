@@ -19,7 +19,7 @@ import time
 import logging
 from logging.handlers import RotatingFileHandler
 from email.mime.text import MIMEText
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,6 +41,10 @@ WEBEX_WEBHOOK = os.getenv("WEBEX_WEBHOOK", "")
 LOG_FILE = "login_monitor.log"
 STATE_FILE = "last_status.txt"
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", 3))
+
+# Alert throttle timers
+last_alert_time = None
+ALERT_THROTTLE_PERIOD = timedelta(minutes=int(os.getenv("ALERT_THROTTLE_PERIOD", 10)))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, handlers=[
@@ -124,6 +128,14 @@ def check_login():
     except requests.exceptions.RequestException as e:
         return "unreachable", str(e)
 
+def should_send_alert():
+    global last_alert_time
+    now = datetime.now()
+    if last_alert_time is None or now - last_alert_time > ALERT_THROTTLE_PERIOD:
+        last_alert_time = now
+        return True
+    return False
+
 if __name__ == "__main__":
     current_status = None
     detail = ""
@@ -138,7 +150,7 @@ if __name__ == "__main__":
     previous_status = read_last_status()
     write_log(current_status, detail)
 
-    if current_status != previous_status:
+    if current_status != previous_status and should_send_alert():
         if current_status == "login_failed":
             msg = f"🚨 Login to {LOGIN_URL} failed: credentials rejected.\nDetails: {detail}"
             send_email("Login Failed Alert", msg)
@@ -155,8 +167,7 @@ if __name__ == "__main__":
                 send_email("Login Monitor Recovery", msg)
                 send_webex_alert(msg)
             logger.info("Login restored.")
-
     else:
-        logger.info("No status change.")
+        logger.info("No status change or alert throttled.")
 
     write_last_status(current_status)

@@ -93,6 +93,7 @@ WEBEX_WEBHOOK=https://webexapis.com/v1/webhooks/incoming/yourwebhook
 
 MAX_RETRIES=3
 RETRY_DELAY=5
+ALERT_THROTTLE_PERIOD=15
 ```
 
 ---
@@ -118,6 +119,18 @@ RETRY_DELAY=5
 | login_failed    | Bad credentials / wrong form     | ✅             |
 | unreachable     | Site unreachable (DNS/refused)   | ✅             |
 | status unchanged| Repeated failure/success         | ❌             |
+
+---
+
+### Alert Throttle Timers
+
+To prevent frequent alerts within a short period, the script includes an alert throttle mechanism. By default, alerts are throttled to one per 10 minutes. You can configure this period using the `ALERT_THROTTLE_PERIOD` environment variable in the `.env` file.
+
+Example:
+
+```env
+ALERT_THROTTLE_PERIOD=15  # Throttle alerts to one every 15 minutes
+```
 
 ---
 
