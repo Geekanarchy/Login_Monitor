@@ -70,6 +70,28 @@ docker-compose up --build
 
 The container will use values from `.env` and check the login endpoint at runtime.
 
+### Optimized Dockerfile
+
+The `Dockerfile` has been optimized using a multi-stage build to reduce the final image size and improve security. Key improvements include:
+
+1. **Multi-Stage Build**:
+   - Dependencies are installed in a separate builder stage, and only the necessary files are copied to the final image.
+
+2. **Minimized Layers**:
+   - Commands are combined to reduce the number of layers in the image.
+
+3. **Non-Root User**:
+   - The application runs as a non-root user for improved security.
+
+### Build and Run with Optimized Dockerfile
+
+To build and run the Docker container with the optimized `Dockerfile`, use the following commands:
+
+```bash
+docker build -t login-monitor .
+docker run --rm -it login-monitor
+```
+
 ---
 
 ## ⚙️ .env Configuration
