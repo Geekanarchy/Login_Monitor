@@ -46,9 +46,13 @@ MAX_RETRIES = int(os.getenv("MAX_RETRIES", 3))
 last_alert_time = None
 ALERT_THROTTLE_PERIOD = timedelta(minutes=int(os.getenv("ALERT_THROTTLE_PERIOD", 10)))
 
-# Configure logging
+# Load log rotation settings from .env
+LOG_MAX_BYTES = int(os.getenv("LOG_MAX_BYTES", 5 * 1024 * 1024))  # Default: 5 MB
+LOG_BACKUP_COUNT = int(os.getenv("LOG_BACKUP_COUNT", 3))  # Default: 3 backups
+
+# Configure logging with RotatingFileHandler
 logging.basicConfig(level=logging.INFO, handlers=[
-    RotatingFileHandler(LOG_FILE, maxBytes=5*1024*1024, backupCount=3),
+    RotatingFileHandler(LOG_FILE, maxBytes=LOG_MAX_BYTES, backupCount=LOG_BACKUP_COUNT),
     logging.StreamHandler()
 ])
 logger = logging.getLogger("LoginMonitor")
