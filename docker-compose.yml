@@ -1,0 +1,10 @@
+version: '3'
+services:
+  login-monitor:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./login_monitor.log:/app/login_monitor.log
+      - ./last_status.txt:/app/last_status.txt
+    restart: always
