@@ -69,7 +69,16 @@ pytest
 
 ### Build and Run with Docker
 
-To build and run the Docker container, use the following commands:
+To build and run the Docker container, follow these steps:
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Geekanarchy/Login_Monitor.git
+cd Login_Monitor
+```
+
+2. Build and run the Docker container:
 
 ```bash
 docker-compose up --build
@@ -80,6 +89,17 @@ docker-compose up --build
 ## 🐳 Run with Docker
 
 ### Build and Run
+
+To build and run the Docker container, follow these steps:
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Geekanarchy/Login_Monitor.git
+cd Login_Monitor
+```
+
+2. Build and run the Docker container:
 
 ```bash
 docker-compose up --build
