@@ -30,7 +30,16 @@ A Python-based login monitoring script that checks the availability of a website
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repo & Configure
+### Clone the Repository
+
+To get started, clone the repository from GitHub:
+
+```bash
+git clone https://github.com/Geekanarchy/Login_Monitor.git
+cd Login_Monitor
+```
+
+### 1. Configure
 
 ```bash
 cp .env.example .env
@@ -56,6 +65,14 @@ pip install -r requirements.txt
 
 ```bash
 pytest
+```
+
+### Build and Run with Docker
+
+To build and run the Docker container, use the following commands:
+
+```bash
+docker-compose up --build
 ```
 
 ---
