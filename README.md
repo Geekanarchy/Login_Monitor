@@ -77,7 +77,7 @@ The container will use values from `.env` and check the login endpoint at runtim
 Example values in `.env.example`:
 
 ```env
-LOGIN_URL=https://example.com/login
+LOGIN_URLS=https://example.com/login,https://anotherexample.com/login
 USERNAME=testuser
 PASSWORD=supersecret
 FAILED_KEYWORD=Invalid credentials
@@ -94,6 +94,16 @@ WEBEX_WEBHOOK=https://webexapis.com/v1/webhooks/incoming/yourwebhook
 MAX_RETRIES=3
 RETRY_DELAY=5
 ALERT_THROTTLE_PERIOD=15
+```
+
+### Multiple URLs
+
+The `LOGIN_URLS` environment variable now supports multiple URLs separated by commas. The script will iterate through each URL and perform login checks individually.
+
+Example:
+
+```env
+LOGIN_URLS=https://example.com/login,https://anotherexample.com/login
 ```
 
 ---

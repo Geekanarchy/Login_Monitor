@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load config from .env
-LOGIN_URL = os.getenv("LOGIN_URL")
+LOGIN_URLS = os.getenv("LOGIN_URLS", "").split(",")
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 FAILED_KEYWORD = os.getenv("FAILED_KEYWORD", "Invalid credentials")
@@ -55,7 +55,7 @@ logger = logging.getLogger("LoginMonitor")
 
 # Validate environment variables
 def validate_env_vars():
-    required_vars = ["LOGIN_URL", "USERNAME", "PASSWORD", "EMAIL_FROM", "EMAIL_TO", "SMTP_SERVER", "SMTP_USERNAME", "SMTP_PASSWORD"]
+    required_vars = ["LOGIN_URLS", "USERNAME", "PASSWORD", "EMAIL_FROM", "EMAIL_TO", "SMTP_SERVER", "SMTP_USERNAME", "SMTP_PASSWORD"]
     missing_vars = [var for var in required_vars if not os.getenv(var)]
     if missing_vars:
         logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
@@ -82,6 +82,7 @@ def send_email(subject, body):
         logger.info("Email alert sent.")
     except smtplib.SMTPException as e:
         logger.error(f"Email error: {e}")
+        raise
 
 def send_webex_alert(body):
     if not WEBEX_WEBHOOK:
@@ -92,8 +93,10 @@ def send_webex_alert(body):
             logger.info("Webex alert sent.")
         else:
             logger.error(f"Webex alert failed with status code {response.status_code}: {response.text}")
+            raise Exception(f"Webex alert failed with status code {response.status_code}")
     except requests.exceptions.RequestException as e:
         logger.error(f"Webex error: {e}")
+        raise
 
 def write_log(status, detail=""):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -110,14 +113,14 @@ def write_last_status(status):
     with open(STATE_FILE, "w") as f:
         f.write(status)
 
-def check_login():
+def check_login(url):
     session = requests.Session()
     payload = {
         "username": USERNAME,
         "password": PASSWORD,
     }
     try:
-        response = session.post(LOGIN_URL, data=payload, timeout=10)
+        response = session.post(url, data=payload, timeout=10)
         if FAILED_KEYWORD in response.text or response.status_code != 200:
             return "login_failed", f"Status {response.status_code}"
         return "success", "Login OK"
@@ -136,38 +139,48 @@ def should_send_alert():
         return True
     return False
 
+def retry_alert(func, *args, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            func(*args)
+            return
+        except Exception as e:
+            logger.error(f"Alert attempt {attempt + 1} failed: {e}")
+            time.sleep(exponential_backoff(attempt))
+
 if __name__ == "__main__":
-    current_status = None
-    detail = ""
-    for attempt in range(MAX_RETRIES):
-        current_status, detail = check_login()
-        if current_status == "success":
-            break
-        delay = exponential_backoff(attempt)
-        logger.warning(f"Attempt {attempt + 1} failed. Retrying in {delay} seconds...")
-        time.sleep(delay)
+    for url in LOGIN_URLS:
+        current_status = None
+        detail = ""
+        for attempt in range(MAX_RETRIES):
+            current_status, detail = check_login(url)
+            if current_status == "success":
+                break
+            delay = exponential_backoff(attempt)
+            logger.warning(f"Attempt {attempt + 1} for {url} failed. Retrying in {delay} seconds...")
+            time.sleep(delay)
 
-    previous_status = read_last_status()
-    write_log(current_status, detail)
+        previous_status = read_last_status()
+        write_log(current_status, detail)
 
-    if current_status != previous_status and should_send_alert():
-        if current_status == "login_failed":
-            msg = f"🚨 Login to {LOGIN_URL} failed: credentials rejected.\nDetails: {detail}"
-            send_email("Login Failed Alert", msg)
-            send_webex_alert(msg)
+        if current_status != previous_status and should_send_alert():
+            if current_status == "login_failed":
+                msg = f"🚨 Login to {url} failed: credentials rejected.\nDetails: {detail}"
+                retry_alert(send_email, "Login Failed Alert", msg)
+                retry_alert(send_webex_alert, msg)
 
-        elif current_status == "unreachable":
-            msg = f"🚨 Site unreachable during login check at {LOGIN_URL}.\nDetails: {detail}"
-            send_email("Site Unreachable Alert", msg)
-            send_webex_alert(msg)
+            elif current_status == "unreachable":
+                msg = f"🚨 Site unreachable during login check at {url}.\nDetails: {detail}"
+                retry_alert(send_email, "Site Unreachable Alert", msg)
+                retry_alert(send_webex_alert, msg)
 
-        elif current_status == "success":
-            msg = f"✅ Login check successful again at {LOGIN_URL}."
-            if os.getenv("SEND_RECOVERY_ALERTS", "false").lower() == "true":
-                send_email("Login Monitor Recovery", msg)
-                send_webex_alert(msg)
-            logger.info("Login restored.")
-    else:
-        logger.info("No status change or alert throttled.")
+            elif current_status == "success":
+                msg = f"✅ Login check successful again at {url}."
+                if os.getenv("SEND_RECOVERY_ALERTS", "false").lower() == "true":
+                    retry_alert(send_email, "Login Monitor Recovery", msg)
+                    retry_alert(send_webex_alert, msg)
+                logger.info("Login restored.")
+        else:
+            logger.info(f"No status change or alert throttled for {url}.")
 
-    write_last_status(current_status)
+        write_last_status(current_status)
