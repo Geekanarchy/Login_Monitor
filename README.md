@@ -169,7 +169,6 @@ ALERT_THROTTLE_PERIOD=15  # Throttle alerts to one every 15 minutes
 ## 💡 Enhancements Possible
 
 - Prometheus metrics exporter
-- Log rotation
 - JSON-formatted webhook alerts
 
 ---
