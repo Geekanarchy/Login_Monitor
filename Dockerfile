@@ -19,7 +19,12 @@ USER appuser
 
 # Copy installed dependencies from the builder stage
 COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+
+# Update PATH to include the directory where pip installs user packages
+ENV PATH="/root/.local/bin:$PATH"
+
+# Ensure dependencies are installed correctly
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY . /app
