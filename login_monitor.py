@@ -10,6 +10,7 @@ Functions:
 - read_last_status: Reads the last known status from a file.
 - write_last_status: Writes the current status to a file.
 - check_login: Checks the login endpoint for success or failure.
+- debug_with_curl: Uses curl for debugging login requests.
 """
 
 import requests
@@ -21,8 +22,13 @@ from logging.handlers import RotatingFileHandler
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+import subprocess
+import urllib3
 
 load_dotenv()
+
+# Disable SSL verification globally
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Support both single URL and multiple URLs
 LOGIN_URL = os.getenv("LOGIN_URL")
@@ -127,8 +133,29 @@ def write_last_status(status):
     with open(STATE_FILE, "w") as f:
         f.write(status)
 
+def debug_with_curl(url, payload, headers):
+    try:
+        # Construct the curl command
+        curl_command = [
+            "curl", "-X", "POST", url,
+            "-d", f"username={payload['username']}&password={payload['password']}"
+        ]
+
+        # Add headers to the curl command
+        for key, value in headers.items():
+            curl_command.extend(["-H", f"{key}: {value}"])
+
+        # Execute the curl command and capture the output
+        result = subprocess.run(curl_command, capture_output=True, text=True)
+        logger.debug(f"Curl command: {' '.join(curl_command)}")
+        logger.debug(f"Curl response: {result.stdout}")
+        logger.debug(f"Curl error (if any): {result.stderr}")
+    except Exception as e:
+        logger.error(f"Curl debugging failed: {e}")
+
 def check_login(url):
     session = requests.Session()
+    session.verify = False  # Update session to disable SSL verification
     try:
         # Step 1: Fetch the CSRF token if available
         initial_response = session.get(url, timeout=10)
@@ -160,6 +187,7 @@ def check_login(url):
         # Step 4: Check the response for success or failure
         if FAILED_KEYWORD in response.text or response.status_code != 200:
             logger.debug(f"Response content: {response.text}")
+            debug_with_curl(url, payload, headers)  # Add curl debugging here
             return "login_failed", f"Status {response.status_code}"
         return "success", "Login OK"
     except requests.exceptions.Timeout:
