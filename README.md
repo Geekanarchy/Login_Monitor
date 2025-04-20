@@ -117,6 +117,16 @@ chmod -R 777 logs
 
 This ensures the container can write to the `logs` directory without permission issues.
 
+### Permissions for State Directory
+
+Before running the Docker container, ensure the `state` directory on your host system has the correct permissions. On Windows, this step may not be necessary, but on Linux or macOS, you can set the permissions using:
+
+```bash
+chmod -R 777 state
+```
+
+This ensures the container can write to the `state` directory without permission issues.
+
 ### Optimized Dockerfile
 
 The `Dockerfile` has been optimized using a multi-stage build to reduce the final image size and improve security. Key improvements include:
