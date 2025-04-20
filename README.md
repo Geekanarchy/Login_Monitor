@@ -180,19 +180,143 @@ Ensure the following files and folders exist before running the project:
 
 If these directories or files are missing, create them manually:
 
+#### Ubuntu
 ```bash
+mkdir logs state
+sudo touch logs/login_monitor.log state/last_status.txt
+sudo chmod -R 777 logs state
+```
+
+#### Windows
+```powershell
 mkdir logs state
 New-Item -ItemType File -Path logs\login_monitor.log
 New-Item -ItemType File -Path state\last_status.txt
 ```
 
-### Permissions
+---
 
-Ensure the `logs` and `state` directories have the correct permissions:
+### Running on Ubuntu and Windows
 
-```bash
-chmod -R 777 logs state
-```
+The project supports both Ubuntu and Windows environments. Follow the instructions below based on your operating system.
+
+#### Ubuntu
+
+1. **Install Python and Pip**:
+   ```bash
+   sudo apt update
+   sudo apt install python3 python3-pip -y
+   ```
+
+2. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Geekanarchy/Login_Monitor.git
+   cd Login_Monitor
+   ```
+
+3. **Install Dependencies**:
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+
+4. **Run the Script**:
+   ```bash
+   python3 login_monitor.py
+   ```
+
+5. **Set Permissions for Logs and State Directories**:
+   Ensure the `logs` and `state` directories are writable:
+   ```bash
+   chmod -R 777 logs state
+   ```
+
+#### Windows
+
+1. **Install Python**:
+   - Download and install Python from [python.org](https://www.python.org/).
+
+2. **Clone the Repository**:
+   ```powershell
+   git clone https://github.com/Geekanarchy/Login_Monitor.git
+   cd Login_Monitor
+   ```
+
+3. **Install Dependencies**:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+
+4. **Run the Script**:
+   ```powershell
+   python login_monitor.py
+   ```
+
+5. **Ensure Logs and State Directories Exist**:
+   Create the `logs` and `state` directories if they do not exist:
+   ```powershell
+   mkdir logs state
+   New-Item -ItemType File -Path logs\login_monitor.log
+   New-Item -ItemType File -Path state\last_status.txt
+   ```
+
+---
+
+### Running Tests
+
+The project includes a test file, `test_login_monitor.py`, to validate the functionality of the script. Follow the steps below to run the tests:
+
+1. **Install Testing Dependencies**:
+   Ensure `pytest` is installed. If not, install it using:
+   ```bash
+   pip install pytest
+   ```
+
+2. **Run the Tests**:
+   Execute the following command to run the tests:
+   ```bash
+   pytest test_login_monitor.py
+   ```
+
+3. **View Test Results**:
+   The test results will be displayed in the terminal. Ensure all tests pass before deploying the script.
+
+---
+
+### Scheduling the Script to Run Every 5 Minutes
+
+You can schedule the script to run every 5 minutes using the following methods:
+
+#### On Linux (Using `cron`)
+
+1. Open the crontab editor:
+   ```bash
+   crontab -e
+   ```
+
+2. Add the following line to schedule the script to run every 5 minutes:
+   ```bash
+   */5 * * * * /usr/bin/python3 /path/to/Login_Monitor/login_monitor.py
+   ```
+   Replace `/path/to/Login_Monitor` with the actual path to the script.
+
+3. Save and exit the editor. The script will now run every 5 minutes.
+
+#### On Windows (Using Task Scheduler)
+
+1. Open Task Scheduler.
+2. Click **Create Basic Task**.
+3. Provide a name and description for the task, then click **Next**.
+4. Select **Daily** and click **Next**.
+5. Set the start date and time, then click **Next**.
+6. Select **Repeat task every 5 minutes** for a duration of **Indefinitely**, then click **Next**.
+7. Select **Start a Program** and click **Next**.
+8. Browse to the Python executable (e.g., `python.exe`) and add the path to `login_monitor.py` as an argument:
+   ```
+   "C:\Path\To\Python\python.exe" "C:\Path\To\Login_Monitor\login_monitor.py"
+   ```
+   Replace `C:\Path\To\Python` and `C:\Path\To\Login_Monitor` with the actual paths.
+
+9. Click **Finish** to create the task. The script will now run every 5 minutes.
 
 ---
 
