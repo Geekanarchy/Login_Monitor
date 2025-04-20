@@ -136,13 +136,17 @@ def check_login(url):
     try:
         response = session.post(url, data=payload, timeout=10)
         if FAILED_KEYWORD in response.text or response.status_code != 200:
+            logger.debug(f"Response content: {response.text}")
             return "login_failed", f"Status {response.status_code}"
         return "success", "Login OK"
     except requests.exceptions.Timeout:
+        logger.error("Request timed out")
         return "unreachable", "Request timed out"
     except requests.exceptions.ConnectionError:
+        logger.error("Connection error")
         return "unreachable", "Connection error"
     except requests.exceptions.RequestException as e:
+        logger.error(f"Request exception: {e}")
         return "unreachable", str(e)
 
 def should_send_alert():
