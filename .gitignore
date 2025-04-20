@@ -1,0 +1,7 @@
+# Ignore logs and state directories
+logs/
+state/
+
+# Ignore specific log and state files
+logs/login_monitor.log
+state/last_status.txt

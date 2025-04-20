@@ -216,6 +216,57 @@ LOGIN_URLS=https://example.com/login,https://anotherexample.com/login
 
 ---
 
+### Workspace Structure
+
+The project workspace is structured as follows:
+
+```
+Login_Monitor/
+├── docker-compose.yml       # Docker Compose configuration
+├── Dockerfile               # Dockerfile for building the container
+├── env.example              # Example .env file for configuration
+├── .gitignore               # Git ignore rules
+├── LICENSE                  # License file
+├── login_monitor.py         # Main monitoring script
+├── README.md                # Project documentation
+├── requirements.txt         # Python dependencies
+├── test_login_monitor.py    # Unit tests for the script
+├── logs/                    # Directory for log files
+│   └── login_monitor.log    # Log file for monitoring output
+├── state/                   # Directory for state files
+│   └── last_status.txt      # Tracks the last known status
+```
+
+### Required Files and Folders
+
+Ensure the following files and folders exist before running the project:
+
+1. **`logs/` Directory**:
+   - Contains `login_monitor.log` for logging output.
+   - Ensure this directory is writable by the application.
+
+2. **`state/` Directory**:
+   - Contains `last_status.txt` to track the last known status.
+   - Ensure this directory is writable by the application.
+
+If these directories or files are missing, create them manually:
+
+```bash
+mkdir logs state
+New-Item -ItemType File -Path logs\login_monitor.log
+New-Item -ItemType File -Path state\last_status.txt
+```
+
+### Permissions
+
+Ensure the `logs` and `state` directories have the correct permissions:
+
+```bash
+chmod -R 777 logs state
+```
+
+---
+
 ## 📬 Alert Scenarios
 
 | Status          | Description                     | Triggers Alert |
