@@ -9,3 +9,4 @@ services:
       - ./state:/app/state:rw
     user: "1000:1000"
     restart: always
+    command: ["python", "login_monitor.py"]

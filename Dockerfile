@@ -15,12 +15,17 @@ WORKDIR /app
 
 # Add a non-root user for improved security
 RUN useradd -m appuser
-USER appuser
+
+# Ensure the logs directory is writable by the appuser
+RUN mkdir -p /app/logs && chown appuser:appuser /app/logs
 
 # Copy installed dependencies from the builder stage
 COPY --from=builder /usr/local /usr/local
 
 # Copy the application code
 COPY . /app
+
+# Switch to the non-root user
+USER appuser
 
 CMD ["python", "login_monitor.py"]

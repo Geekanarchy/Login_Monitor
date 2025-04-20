@@ -92,19 +92,20 @@ def send_email(subject, body):
         logger.error(f"Email error: {e}")
         raise
 
-def send_webex_alert(body):
-    if not WEBEX_WEBHOOK:
-        return
-    try:
-        response = requests.post(WEBEX_WEBHOOK, json={"text": body})
-        if response.status_code == 200:
-            logger.info("Webex alert sent.")
-        else:
-            logger.error(f"Webex alert failed with status code {response.status_code}: {response.text}")
-            raise Exception(f"Webex alert failed with status code {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Webex error: {e}")
-        raise
+# Make Webex alerts optional
+if WEBEX_WEBHOOK:
+    def send_webex_alert(body):
+        try:
+            response = requests.post(WEBEX_WEBHOOK, json={"text": body})
+            if response.status_code == 200:
+                logger.info("Webex alert sent.")
+            else:
+                logger.error(f"Webex alert failed with status code {response.status_code}: {response.text}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Webex error: {e}")
+else:
+    def send_webex_alert(body):
+        logger.info("Webex alert skipped as WEBEX_WEBHOOK is not configured.")
 
 def write_log(status, detail=""):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
