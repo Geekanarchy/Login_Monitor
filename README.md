@@ -67,6 +67,56 @@ pytest
 
 ---
 
+### Setting Up a Virtual Environment
+
+To avoid issues with system-managed Python environments, it is recommended to use a virtual environment for installing dependencies. Follow these steps:
+
+#### On Linux
+
+1. **Create a Virtual Environment**:
+   ```bash
+   python3 -m venv venv
+   ```
+
+2. **Activate the Virtual Environment**:
+   ```bash
+   source venv/bin/activate
+   ```
+
+3. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the Script**:
+   ```bash
+   python3 login_monitor.py
+   ```
+
+#### On Windows
+
+1. **Create a Virtual Environment**:
+   ```powershell
+   python -m venv venv
+   ```
+
+2. **Activate the Virtual Environment**:
+   ```powershell
+   .\venv\Scripts\activate
+   ```
+
+3. **Install Dependencies**:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+
+4. **Run the Script**:
+   ```powershell
+   python login_monitor.py
+   ```
+
+---
+
 ### Removed Docker References
 
 Docker references have been removed from this project. Please use the Python-based setup instructions for running the application.
