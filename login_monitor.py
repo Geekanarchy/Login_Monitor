@@ -43,7 +43,7 @@ SMTP_USERNAME = os.getenv("SMTP_USERNAME")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 WEBEX_WEBHOOK = os.getenv("WEBEX_WEBHOOK", "")
 
-LOG_FILE = "/app/logs/login_monitor.log"
+LOG_FILE = "logs/login_monitor.log"
 
 # Ensure the logs directory exists
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
