@@ -129,12 +129,35 @@ def write_last_status(status):
 
 def check_login(url):
     session = requests.Session()
-    payload = {
-        "username": USERNAME,
-        "password": PASSWORD,
-    }
     try:
-        response = session.post(url, data=payload, timeout=10)
+        # Step 1: Fetch the CSRF token if available
+        initial_response = session.get(url, timeout=10)
+        csrf_token = session.cookies.get("XSRF-TOKEN")  # Adjust the key if the token has a different name
+
+        # Step 2: Prepare the login payload and headers
+        payload = {
+            "username": USERNAME,
+            "password": PASSWORD,
+        }
+        headers = {}
+
+        # Include CSRF token in headers if available
+        if csrf_token:
+            headers["X-XSRF-TOKEN"] = csrf_token
+
+        # Step 3: Determine content type (JSON or form data)
+        if "application/json" in initial_response.headers.get("Content-Type", ""):
+            headers["Content-Type"] = "application/json"
+            payload = {
+                "username": USERNAME,
+                "password": PASSWORD,
+                "csrf_token": csrf_token,  # Include CSRF token in JSON payload if required
+            }
+            response = session.post(url, json=payload, headers=headers, timeout=10)
+        else:
+            response = session.post(url, data=payload, headers=headers, timeout=10)
+
+        # Step 4: Check the response for success or failure
         if FAILED_KEYWORD in response.text or response.status_code != 200:
             logger.debug(f"Response content: {response.text}")
             return "login_failed", f"Status {response.status_code}"
