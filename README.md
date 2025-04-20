@@ -159,6 +159,27 @@ RETRY_DELAY=5
 ALERT_THROTTLE_PERIOD=15
 ```
 
+### Single or Multiple URLs
+
+The script supports monitoring either a single URL or multiple URLs. Configure this in the `.env` file:
+
+- **Single URL**: Use the `LOGIN_URL` variable.
+- **Multiple URLs**: Use the `LOGIN_URLS` variable (comma-separated).
+
+If both are set, `LOGIN_URL` will take precedence.
+
+Example for a single URL:
+
+```env
+LOGIN_URL=https://example.com/login
+```
+
+Example for multiple URLs:
+
+```env
+LOGIN_URLS=https://example.com/login,https://anotherexample.com/login
+```
+
 ### Webex Alerts (Optional)
 
 Webex alerts are now optional. To enable Webex alerts, set the `WEBEX_WEBHOOK` environment variable in your `.env` file. If left empty, Webex alerts will be disabled.
@@ -173,16 +194,6 @@ To disable Webex alerts, leave the `WEBEX_WEBHOOK` field empty:
 
 ```env
 WEBEX_WEBHOOK=
-```
-
-### Multiple URLs
-
-The `LOGIN_URLS` environment variable supports multiple URLs separated by commas. The script will iterate through each URL and perform login checks individually.
-
-Example:
-
-```env
-LOGIN_URLS=https://example.com/login,https://anotherexample.com/login
 ```
 
 ---
