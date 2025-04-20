@@ -42,7 +42,7 @@ cd Login_Monitor
 ### 1. Configure
 
 ```bash
-cp .env.example .env
+cp env.example .env
 nano .env  # Edit values accordingly
 ```
 
