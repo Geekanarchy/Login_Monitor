@@ -6,7 +6,6 @@ A Python-based login monitoring script that checks the availability of a website
 - 🌐 **Site unreachable alerts**
 - 🔁 **Retry logic before alerting**
 - 🔐 **Environment variable configuration**
-- 🐳 **Docker support**
 - 📧 Email & 💬 Webex Teams alerting
 - 📝 Log and state tracking
 
@@ -24,7 +23,6 @@ A Python-based login monitoring script that checks the availability of a website
 - Remembers last status in `last_status.txt`
 - Skips duplicate alerts unless status changes
 - Built-in **retry logic** before declaring failure
-- Deployable via **Docker** or traditional cron
 
 ---
 
@@ -46,7 +44,7 @@ cp env.example .env
 nano .env  # Edit values accordingly
 ```
 
-### 2. Run with Python (Non-Docker)
+### 2. Run with Python
 
 ```bash
 pip install -r requirements.txt
@@ -67,71 +65,11 @@ pip install -r requirements.txt
 pytest
 ```
 
-
 ---
 
-## 🐳 Run with Docker
+### Removed Docker References
 
-### Build and Run
-
-To build and run the Docker container, follow these steps:
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/Geekanarchy/Login_Monitor.git
-cd Login_Monitor
-```
-
-2. Build and run the Docker container:
-
-```bash
-docker-compose up --build
-```
-
-The container will use values from `.env` and check the login endpoint at runtime.
-
-### Permissions for Logs Directory
-
-Before running the Docker container, ensure the `logs` directory on your host system has the correct permissions. On Windows, this step may not be necessary, but on Linux or macOS, you can set the permissions using:
-
-```bash
-chmod -R 777 logs
-```
-
-This ensures the container can write to the `logs` directory without permission issues.
-
-### Permissions for State Directory
-
-Before running the Docker container, ensure the `state` directory on your host system has the correct permissions. On Windows, this step may not be necessary, but on Linux or macOS, you can set the permissions using:
-
-```bash
-chmod -R 777 state
-```
-
-This ensures the container can write to the `state` directory without permission issues.
-
-### Optimized Dockerfile
-
-The `Dockerfile` has been optimized using a multi-stage build to reduce the final image size and improve security. Key improvements include:
-
-1. **Multi-Stage Build**:
-   - Dependencies are installed in a separate builder stage, and only the necessary files are copied to the final image.
-
-2. **Minimized Layers**:
-   - Commands are combined to reduce the number of layers in the image.
-
-3. **Non-Root User**:
-   - The application runs as a non-root user for improved security.
-
-### Build and Run with Optimized Dockerfile
-
-To build and run the Docker container with the optimized `Dockerfile`, use the following commands:
-
-```bash
-docker build -t login-monitor .
-docker run --rm -it login-monitor
-```
+Docker references have been removed from this project. Please use the Python-based setup instructions for running the application.
 
 ---
 
@@ -206,8 +144,6 @@ WEBEX_WEBHOOK=
 | `.env`              | Environment configuration        |
 | `login_monitor.log` | Log of login attempts/results    |
 | `last_status.txt`   | Tracks previous known state      |
-| `Dockerfile`        | Build container                  |
-| `docker-compose.yml`| Run service with `.env` support  |
 
 ---
 
@@ -217,8 +153,6 @@ The project workspace is structured as follows:
 
 ```
 Login_Monitor/
-├── docker-compose.yml       # Docker Compose configuration
-├── Dockerfile               # Dockerfile for building the container
 ├── env.example              # Example .env file for configuration
 ├── .gitignore               # Git ignore rules
 ├── LICENSE                  # License file
@@ -324,34 +258,25 @@ Never commit `.env` or credentials to version control. Use `.gitignore` to prote
      - Use the `env.example` file as a reference.
      - Double-check for typos or missing values.
 
-4. **Docker Build Failures**
-   - **Problem**: The Docker container fails to build or run.
-   - **Solution**:
-     - Ensure Docker is installed and running on your system.
-     - Run `docker-compose up --build` to rebuild the container.
-     - Check the Dockerfile and `docker-compose.yml` for syntax errors or misconfigurations.
-
-5. **Log File Issues**
+4. **Log File Issues**
    - **Problem**: The `login_monitor.log` file is not being updated or is missing.
    - **Solution**:
      - Ensure the script has write permissions for the log file.
      - Check the `LOG_FILE` path in the script and ensure it points to a valid location.
-     - If running in Docker, ensure the volume mapping for logs is correctly configured in `docker-compose.yml`.
 
-6. **Webex Alert Issues**
+5. **Webex Alert Issues**
    - **Problem**: Webex alerts are not being sent.
    - **Solution**:
      - Verify the `WEBEX_WEBHOOK` URL is correct and active.
      - Check Webex API permissions and ensure the webhook is configured to accept incoming messages.
      - Look for error messages in the logs to identify the issue.
 
-7. **Permission Errors**
+6. **Permission Errors**
    - **Problem**: The script fails due to permission issues.
    - **Solution**:
      - Ensure the script and its dependencies have the necessary permissions to execute.
-     - If running in Docker, ensure the container has access to required files and directories.
 
-8. **Throttled Alerts**
+7. **Throttled Alerts**
    - **Problem**: Alerts are not being sent even though the status has changed.
    - **Solution**:
      - Check the `ALERT_THROTTLE_PERIOD` value in the `.env` file.
