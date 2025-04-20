@@ -5,6 +5,6 @@ services:
     env_file:
       - .env
     volumes:
-      - ./login_monitor.log:/app/login_monitor.log
-      - ./last_status.txt:/app/last_status.txt
+      - ./login_monitor.log:/app/login_monitor.log:rw
+      - ./last_status.txt:/app/last_status.txt:rw
     restart: always
