@@ -107,6 +107,16 @@ docker-compose up --build
 
 The container will use values from `.env` and check the login endpoint at runtime.
 
+### Permissions for Logs Directory
+
+Before running the Docker container, ensure the `logs` directory on your host system has the correct permissions. On Windows, this step may not be necessary, but on Linux or macOS, you can set the permissions using:
+
+```bash
+chmod -R 777 logs
+```
+
+This ensures the container can write to the `logs` directory without permission issues.
+
 ### Optimized Dockerfile
 
 The `Dockerfile` has been optimized using a multi-stage build to reduce the final image size and improve security. Key improvements include:
@@ -155,9 +165,25 @@ RETRY_DELAY=5
 ALERT_THROTTLE_PERIOD=15
 ```
 
+### Webex Alerts (Optional)
+
+Webex alerts are now optional. To enable Webex alerts, set the `WEBEX_WEBHOOK` environment variable in your `.env` file. If left empty, Webex alerts will be disabled.
+
+Example:
+
+```env
+WEBEX_WEBHOOK=https://webexapis.com/v1/webhooks/incoming/yourwebhook
+```
+
+To disable Webex alerts, leave the `WEBEX_WEBHOOK` field empty:
+
+```env
+WEBEX_WEBHOOK=
+```
+
 ### Multiple URLs
 
-The `LOGIN_URLS` environment variable now supports multiple URLs separated by commas. The script will iterate through each URL and perform login checks individually.
+The `LOGIN_URLS` environment variable supports multiple URLs separated by commas. The script will iterate through each URL and perform login checks individually.
 
 Example:
 
