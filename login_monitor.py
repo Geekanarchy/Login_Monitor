@@ -24,8 +24,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Load config from .env
+# Support both single URL and multiple URLs
+LOGIN_URL = os.getenv("LOGIN_URL")
 LOGIN_URLS = os.getenv("LOGIN_URLS", "").split(",")
+
+if LOGIN_URL:
+    LOGIN_URLS = [LOGIN_URL]  # If single URL is provided, use it as a list
+
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 FAILED_KEYWORD = os.getenv("FAILED_KEYWORD", "Invalid credentials")
